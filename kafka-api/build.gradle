@@ -1,0 +1,9 @@
+bootJar {
+    archiveFileName = 'blog-api-server.jar'
+}
+
+dependencies {
+    implementation project(path: ":kafka-core", configuration: 'default')
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
