@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.3.9.RELEASE'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "com.commercehub.gradle.plugin.avro" version "0.99.99"
+
     id 'java'
     id 'idea'
 }
@@ -10,6 +11,9 @@ allprojects {
     repositories {
         gradlePluginPortal()
         mavenCentral()
+        maven {
+            url "https://packages.confluent.io/maven"
+        }
     }
 }
 
@@ -46,5 +50,7 @@ subprojects {
         }
         implementation 'org.springframework.kafka:spring-kafka'
         implementation "org.apache.avro:avro:1.10.2"
+
+        implementation 'io.confluent:kafka-avro-serializer:7.0.1'
     }
 }

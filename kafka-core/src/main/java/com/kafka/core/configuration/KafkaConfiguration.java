@@ -2,12 +2,13 @@ package com.kafka.core.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafka.core.configuration.serializer.AvroJsonMixin;
-import com.kafka.core.configuration.serializer.AvroKafkaJsonDeserializer;
-import com.kafka.core.scheme.AUser;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -37,23 +38,24 @@ public class KafkaConfiguration {
    private final KafkaProperties kafkaProperties;
 
    @Bean
-   public KafkaTemplate<String, Object> kafkaTemplate() {
+   public KafkaTemplate<String, GenericRecord> kafkaTemplate() {
 
       return new KafkaTemplate<>(producerFactory());
    }
 
    @Bean
-   public ProducerFactory<String, Object> producerFactory() {
+   public ProducerFactory<String, GenericRecord> producerFactory() {
 
       Map<String, Object> configProps = new HashMap<>();
       configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
       configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-      configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, AvroKafkaJsonDeserializer.class);
+      configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+      configProps.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
 
       ObjectMapper objectMapper = new ObjectMapper();
       objectMapper.addMixIn(SpecificRecordBase.class, AvroJsonMixin.class);
 
-      DefaultKafkaProducerFactory<String, Object> factory = new DefaultKafkaProducerFactory<>(configProps);
+      DefaultKafkaProducerFactory<String, GenericRecord> factory = new DefaultKafkaProducerFactory<>(configProps);
       factory.setValueSerializer(new JsonSerializer<>(objectMapper));
 
       return factory;
@@ -61,7 +63,7 @@ public class KafkaConfiguration {
 
 
    @Bean
-   public ConcurrentKafkaListenerContainerFactory<String, AUser> kafkaListenerContainerFactory(
+   public ConcurrentKafkaListenerContainerFactory<String, GenericRecord> kafkaListenerContainerFactory(
       RetryTemplate retryTemplate
    ) {
 
@@ -69,15 +71,14 @@ public class KafkaConfiguration {
       props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
       props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, kafkaProperties.getConsumer().getEnableAutoCommit());
       props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaProperties.getConsumer().getAutoOffsetReset());
-//      props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
+      props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+      props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaAvroDeserializer.class.getName());
+      props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
+      props.put("schema.compatibility.level", "full");
 
-      ConsumerFactory<String, AUser> consumerFactory = new DefaultKafkaConsumerFactory<>(
-         props,
-         new StringDeserializer(),
-         new AvroKafkaJsonDeserializer<>(AUser.class)
-      );
+      ConsumerFactory<String, GenericRecord> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
 
-      ConcurrentKafkaListenerContainerFactory<String, AUser> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
+      ConcurrentKafkaListenerContainerFactory<String, GenericRecord> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
       containerFactory.setConsumerFactory(consumerFactory);
       containerFactory.setRetryTemplate(retryTemplate);
       containerFactory.setRecoveryCallback(context -> {
