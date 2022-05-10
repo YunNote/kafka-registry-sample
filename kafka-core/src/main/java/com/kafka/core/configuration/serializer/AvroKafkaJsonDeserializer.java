@@ -8,7 +8,7 @@ public class AvroKafkaJsonDeserializer<T> extends JsonDeserializer<T> {
 
       super(targetType);
       this.setRemoveTypeHeaders(false);
-      this.addTrustedPackages("com.smilegate.core.schema");
+      this.addTrustedPackages("com.kafka.core.scheme");
       this.setUseTypeMapperForKey(true);
    }
 
