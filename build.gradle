@@ -1,12 +1,14 @@
 plugins {
     id 'org.springframework.boot' version '2.3.9.RELEASE'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "com.commercehub.gradle.plugin.avro" version "0.99.99"
     id 'java'
     id 'idea'
 }
 
 allprojects {
     repositories {
+        gradlePluginPortal()
         mavenCentral()
     }
 }
@@ -15,6 +17,7 @@ subprojects {
 
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: "com.commercehub.gradle.plugin.avro"
     apply plugin: 'java'
     apply plugin: 'idea'
 
@@ -42,5 +45,6 @@ subprojects {
             exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
         }
         implementation 'org.springframework.kafka:spring-kafka'
+        implementation "org.apache.avro:avro:1.10.2"
     }
 }

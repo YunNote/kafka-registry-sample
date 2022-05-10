@@ -1,5 +1,7 @@
 package com.kafka.core.configuration;
 
+import com.kafka.core.configuration.serializer.AvroKafkaJsonDeserializer;
+import com.kafka.core.scheme.AUser;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +50,7 @@ public class KafkaConfiguration {
 
 
    @Bean
-   public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory(
+   public ConcurrentKafkaListenerContainerFactory<String, AUser> kafkaListenerContainerFactory(
       RetryTemplate retryTemplate
    ) {
 
@@ -56,13 +58,17 @@ public class KafkaConfiguration {
       props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
       props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, kafkaProperties.getConsumer().getEnableAutoCommit());
       props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, kafkaProperties.getConsumer().getAutoOffsetReset());
-      props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-      props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+//      props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+//      props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 //      props.put(KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, "http://localhost:8081");
 
-      ConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
+      ConsumerFactory<String, AUser> consumerFactory = new DefaultKafkaConsumerFactory<>(
+         props,
+         new StringDeserializer(),
+         new AvroKafkaJsonDeserializer<>(AUser.class)
+      );
 
-      ConcurrentKafkaListenerContainerFactory<String, String> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
+      ConcurrentKafkaListenerContainerFactory<String, AUser> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
       containerFactory.setConsumerFactory(consumerFactory);
       containerFactory.setRetryTemplate(retryTemplate);
       containerFactory.setRecoveryCallback(context -> {

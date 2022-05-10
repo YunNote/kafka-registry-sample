@@ -1,7 +1,7 @@
 {
-  "namespace": "com.kafka.core",
+  "namespace": "com.kafka.core.scheme",
   "type": "record",
-  "name": "User",
+  "name": "AUser",
   "fields": [
     {
       "name": "name",
