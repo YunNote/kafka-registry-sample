@@ -8,9 +8,12 @@ spring:
       group-prefix: sample
 
     consumer-group: topic
-
     producer:
       bootstrap-servers: localhost:9092
+
+    schema:
+      registry:
+        url: http://localhost:8081
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
