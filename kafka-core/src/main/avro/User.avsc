@@ -1,16 +1,20 @@
 {
-  "namespace": "com.kafka.core.scheme",
   "type": "record",
   "name": "AUser",
+  "namespace": "com.kafka.core.scheme",
   "fields": [
     {
       "name": "name",
-      "type": "string",
-      "avro.java.string": "String"
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
     },
     {
       "name": "age",
-      "type": "int"
+      "type": "int",
+      "default": 0
     }
   ]
 }

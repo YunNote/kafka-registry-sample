@@ -23,23 +23,25 @@ public class TestController {
 
       Schema.Parser parser = new Parser();
       Schema avroSchema = parser.parse("{\n"
-         + "  \"namespace\": \"com.kafka.core.scheme\",\n"
          + "  \"type\": \"record\",\n"
          + "  \"name\": \"AUser\",\n"
+         + "  \"namespace\": \"com.kafka.core.scheme\",\n"
          + "  \"fields\": [\n"
          + "    {\n"
          + "      \"name\": \"name\",\n"
-         + "      \"type\": [\"null\", \"string\"],\n"
-         + "      \"default\" : null "
+         + "      \"type\": [\n"
+         + "        \"null\",\n"
+         + "        \"string\"\n"
+         + "      ],\n"
+         + "      \"default\": null\n"
          + "    },\n"
          + "    {\n"
          + "      \"name\": \"age\",\n"
          + "      \"type\": \"int\",\n"
-         + "      \"default\" : 0 "
+         + "      \"default\": 0\n"
          + "    }\n"
          + "  ]\n"
-         + "}\n"
-         + "\n");
+         + "}");
 
       GenericRecord avroRecord = new GenericData.Record(avroSchema);
       avroRecord.put("name", "최윤진");
@@ -49,46 +51,47 @@ public class TestController {
       kafkaTemplate.send(record);
    }
 
-   @GetMapping("/send2")
-   public void send2() {
-
-      Schema.Parser parser = new Parser();
-      Schema avroSchema = parser.parse("{\n"
-         + "  \"namespace\": \"com.kafka.core.scheme\",\n"
-         + "  \"type\": \"record\",\n"
-         + "  \"name\": \"AUser\",\n"
-         + "  \"fields\": [\n"
-         + "    {\n"
-         + "      \"name\": \"name5\",\n"
-         + "      \"type\": [\"null\", \"string\"],\n"
-         + "      \"default\" : null "
-         + "    },\n"
-         + "    {\n"
-         + "      \"name\": \"age\",\n"
-         + "      \"type\": \"int\"\n"
-         + "    },\n"
-         + "    {\n"
-         + "      \"name\": \"address3\",\n"
-         + "      \"type\": [\"null\", \"string\"],\n"
-         + "      \"default\" : null "
-         + "    },\n"
-         + "    {\n"
-         + "      \"name\": \"name4\",\n"
-         + "      \"type\": [\"null\", \"string\"],\n"
-         + "      \"default\" : null "
-         + "    }\n"
-         + "  ]\n"
-         + "}\n"
-         + "\n");
-
-      GenericRecord avroRecord = new GenericData.Record(avroSchema);
-//      avroRecord.put("name4", "최윤진");
-      avroRecord.put("age", 30);
-      avroRecord.put("address3", "서울시");
-
-      ProducerRecord<String, GenericRecord> record = new ProducerRecord<>("test-topic", avroRecord);
-      kafkaTemplate.send(record);
-   }
+//   @GetMapping("/send2")
+//   public void send2() {
+//
+//      Schema.Parser parser = new Parser();
+//      Schema avroSchema = parser.parse("{\n"
+//         + "  \"namespace\": \"com.kafka.core.scheme\",\n"
+//         + "  \"type\": \"record\",\n"
+//         + "  \"name\": \"AUser\",\n"
+//         + "  \"fields\": [\n"
+//         + "    {\n"
+//         + "      \"name\": \"name5\",\n"
+//         + "      \"type\": [\"null\", \"string\"],\n"
+//         + "      \"default\" : null "
+//         + "    },\n"
+//         + "    {\n"
+//         + "      \"name\": \"age\",\n"
+//         + "      \"type\": \"int\",\n"
+//         + "      \"default\" : null "
+//         + "    },\n"
+//         + "    {\n"
+//         + "      \"name\": \"address3\",\n"
+//         + "      \"type\": [\"null\", \"string\"],\n"
+//         + "      \"default\" : null "
+//         + "    },\n"
+//         + "    {\n"
+//         + "      \"name\": \"name4\",\n"
+//         + "      \"type\": [\"null\", \"string\"],\n"
+//         + "      \"default\" : null "
+//         + "    }\n"
+//         + "  ]\n"
+//         + "}\n"
+//         + "\n");
+//
+//      GenericRecord avroRecord = new GenericData.Record(avroSchema);
+////      avroRecord.put("name4", "최윤진");
+//      avroRecord.put("age", 30);
+//      avroRecord.put("address3", "서울시");
+//
+//      ProducerRecord<String, GenericRecord> record = new ProducerRecord<>("test-topic", avroRecord);
+//      kafkaTemplate.send(record);
+//   }
 
    @GetMapping
    public String test() {
